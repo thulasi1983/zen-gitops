@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: pharma
+  namespace: argocd
+spec:
+  description: Pharma microservices project
+
+  sourceRepos:
+    # Replace <YOUR_GITHUB_USERNAME> with your GitHub username after forking zen-gitops
+    - "https://github.com/<YOUR_GITHUB_USERNAME>/zen-gitops.git"
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: dev
+    - server: https://kubernetes.default.svc
+      namespace: qa
+    - server: https://kubernetes.default.svc
+      namespace: prod
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  orphanedResources:
+    warn: false
+
+  roles:
+    - name: pharma-admin
+      description: Admin role for pharma project
+      policies:
+        - p, proj:pharma:pharma-admin, applications, *, pharma/*, allow
+      groups:
+        - pharma-devops-team
